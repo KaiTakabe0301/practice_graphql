@@ -6,6 +6,9 @@ import http from "http";
 import cors from "cors";
 import { typeDefs } from "./schema";
 import { resolvers } from "./schema";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 (async () => {
   const app = express();
@@ -34,4 +37,12 @@ import { resolvers } from "./schema";
     httpServer.listen({ port: 4000 }, resolve)
   );
   console.log(`🚀 Server ready at http://localhost:4000`);
-})();
+})()
+  .then(async () => {
+    await prisma.$connect();
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });
