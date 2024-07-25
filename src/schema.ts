@@ -1,11 +1,35 @@
+import { prisma } from ".";
+
 export const typeDefs = `#graphql
+  type User {
+    id: ID!
+    name: String!
+    email: String!
+  }
+
   type Query {
-    hello: String
+    users: [User!]!
+  }
+
+  type Mutation {
+    createUser(name: String!, email: String!): User!
   }
 `;
 
 export const resolvers = {
   Query: {
-    hello: () => "Hello, GraphQL with Apollo!",
+    users: async () => {
+      return await prisma.user.findMany();
+    },
+  },
+  Mutation: {
+    createUser: (_: any, args: { name: string; email: string }) => {
+      return prisma.user.create({
+        data: {
+          name: args.name,
+          email: args.email,
+        },
+      });
+    },
   },
 };
